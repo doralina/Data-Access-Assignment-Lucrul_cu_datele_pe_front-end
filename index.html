@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"> 
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucrul cu datele pe front-end</title>
+</head>
+
+<body>
+    <script>
+
+        function checkedOption() {
+
+            var arrStorage = document.getElementsByClassName('allAnswers');
+        
+            for (i = 0; i < arrStorage.length; i++) {
+                if (arrStorage[i].checked) {
+                    localStorage.setItem("key" + (Math.floor(i / 4) + 1), arrStorage[i].value);
+                }
+            }
+           
+        }
+
+        fetch('quiz.json').then(function (response) {
+            if (!response.ok) {
+                throw Error("Error while reading file.");
+            }
+            return response.json();
+
+        }).then(function (data) {
+           
+            for (let i = 1; i <= 4; i++) {
+
+                let myQuestions = data.quiz['q' + i].question;
+                let myOptions = data.quiz['q' + i].options;
+                let myAnswers = data.quiz['q' + i].answer;
+                document.body.innerHTML += '<h2> Question ' + [i] + ': ' + myQuestions + '</h2>';
+
+                for (let index = 0; index < myOptions.length; index++) {
+                    document.body.innerHTML += '<input class="allAnswers" type="radio" name="possible-answer' + i + '" onclick ="checkedOption()" value="' + myOptions[index] + '" > <label>' + myOptions[index] + '</label><br>';
+                   
+                }
+
+            }
+            
+        }).then (function(){
+            var arrAnswers = document.getElementsByClassName('allAnswers');
+            for (let index = 0; index < arrAnswers.length; index++) {
+                if ( localStorage.getItem("key" + (Math.floor(index / 4) + 1)) == arrAnswers[index].value){
+                    arrAnswers[index].checked=true;
+                }
+                                
+            }
+            
+        }).catch(function (err) {
+            console.log('Fetch problem: ' + err.message);
+        });
+        
+
+
+    </script>
+</body>
+
+</html>
